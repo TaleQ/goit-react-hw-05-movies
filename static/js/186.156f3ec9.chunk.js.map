@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/186.156f3ec9.chunk.js","mappings":"mLAAO,IAAMA,EAAU,WAEtB,EAED,W","sources":["components/Reviews/Reviews.jsx"],"sourcesContent":["export const Reviews = () => {\n  \n};\n\nexport default Reviews;"],"names":["Reviews"],"sourceRoot":""}
