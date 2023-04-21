@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useParams, NavLink } from 'react-router-dom';
+import { useParams, useLocation, useNavigate , NavLink, Outlet } from 'react-router-dom';
 import { useCustomContext } from 'context/Context';
 import { fetchMovieDetails } from 'api/Api';
 import { Loader } from 'components/Loader/Loader';
+import { MovieThumb, GoBackButton, GenresItem, GenresList, StyledSpan, MovieCard, AddInfoLink } from './MovieDetails.styled';
 
 export const MovieDetails = () => {
   const { movieId } = useParams();
   const { isLoading, setIsLoading } = useCustomContext();
   const [movieData, setMovieData] = useState({});
   const [genres, setGenres] = useState([]);
+  const [releaseDate, setReleaseDate] = useState('Release year is unknown');
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getMovieDetails = async () => {
@@ -18,6 +22,7 @@ export const MovieDetails = () => {
         console.log(data);
         setMovieData(data);
         setGenres(data.genres);
+        setReleaseDate(data.release_date.slice(0, 4));
       } catch (error) {
         console.log(`Oops, something went wrong. ${error}. Try again later.`);
       } finally {
@@ -28,40 +33,46 @@ export const MovieDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleClick = () => {
+    navigate(location.state.from);
+  };
+
   return (
     <>
       {isLoading && <Loader />}
-      <button type="button">Go back</button>
-      <div>
+      <GoBackButton type="button" onClick={handleClick}>Go back</GoBackButton>
+        <MovieCard>
         <img
-          src={`https://image.tmdb.org/t/p/w500/${movieData.poster_path}`}
-          alt={movieData.original_title}
+          src={`https://image.tmdb.org/t/p/w200${movieData.poster_path}`}
+          alt={movieData.title}
         ></img>
-      </div>
       <div>
-        <h1>{movieData.original_title}</h1>
+          <h1>{movieData.title}<StyledSpan>{`(${releaseDate})`}</StyledSpan></h1>
         <p>
           <span>User score:</span>
-          <span>{movieData.vote_average}</span>
+          <StyledSpan>{movieData.vote_average}</StyledSpan>
         </p>
         <h2>Overview</h2>
-        <p>{movieData.overview}</p>
-        <h2>Genres</h2>
-        <ul>
-          {genres.map(genre => (
-            <li key={genre.id}>{genre.name}</li>
-          ))}
-        </ul>
+          <p>{movieData.overview}</p>
+          {genres.length > 0 && (<><h2>Genres</h2><GenresList>
+            {genres.map(genre => (
+              <GenresItem key={genre.id}>{genre.name}</GenresItem>
+            ))}
+          </GenresList></>)}
       </div>
-      <div>
+      </MovieCard>
+      <MovieThumb>
         <h2>Additional information</h2>
         <ul>
-          <li><NavLink to="cast">Cast</NavLink>
-          </li>
-          <li><NavLink to="reviews">Reviews</NavLink>
-          </li>
+          <AddInfoLink><NavLink to="cast">Cast</NavLink>
+          </AddInfoLink>
+          <AddInfoLink><NavLink to="reviews">Reviews</NavLink>
+          </AddInfoLink>
         </ul>
-      </div>
+      </MovieThumb>
+      <MovieThumb>
+        <Outlet/>
+      </MovieThumb>
     </>
   );
 };

@@ -20,7 +20,8 @@ export const fetchTrendingMovies = async () => {
   const params = {
     api_key: API_KEY,
     media_type: 'movie',
-    time_window: 'week'
+    time_window: 'week',
+    language: 'en-US'
   };
   const response = await axios.get(`https://api.themoviedb.org/3/trending/${params.media_type}/${params.time_window}?api_key=${params.api_key}`);
   return response.data;
@@ -28,5 +29,15 @@ export const fetchTrendingMovies = async () => {
 
 export const fetchMovieDetails = async (movieId) => {
   const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}`);
+  return response.data;
+};
+
+export const fetchMovieCast = async (movieId) => {
+  const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${API_KEY}`);
+  return response.data;
+};
+
+export const fetchMovieReviews = async (movieId) => {
+  const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}/reviews?api_key=${API_KEY}`);
   return response.data;
 }

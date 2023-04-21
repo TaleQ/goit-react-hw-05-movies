@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useCustomContext } from 'context/Context';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { fetchMoviesByQuery } from 'api/Api';
 import { Loader } from 'components/Loader/Loader';
+import { MoviesList, MoviesListItem } from 'components/MoviesList/MoviesList.styled';
+import { SearchForm, SearchButon, SearchInput } from './Movies.styled';
+import { TfiSearch } from "react-icons/tfi";
 
 export const Movies = () => {
   const [inputValue, setInputValue] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
   const [moviesByQuery, setMoviesByQuery] = useState([]);
   const { isLoading, setIsLoading } = useCustomContext();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("query");
 
   const handleChange = (e) => {
     setInputValue(e.target.value);
@@ -21,7 +25,8 @@ export const Movies = () => {
         console.log("Please enter search query");
         return
     };
-    setSearchQuery(searchQuery);
+    setSearchParams({ query: searchQuery });
+    setInputValue('');
   }
 
   useEffect(() => {
@@ -48,34 +53,31 @@ export const Movies = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <input
+      <SearchForm onSubmit={handleSubmit}>
+          <SearchInput
         type="text"
             autoComplete="off"
             autoFocus
-            placeholder="Search images and photos"
+            placeholder="Search movies"
         value={inputValue}
         onChange={handleChange}/>
-      <button type="submit"></button>
-      </form>
+        <SearchButon type="submit">
+          <TfiSearch fill="#ffffff"/>
+      </SearchButon>
+      </SearchForm>
       {isLoading && <Loader />}
-      <ul>
+      <MoviesList>
         {moviesByQuery.length > 0 ? (
           moviesByQuery.map(movie => (
-            <li key={movie.id}>
-              <div>
-                <img
+            <MoviesListItem key={movie.id}>
+                <Link to={`${movie.id}`} state={{ from: `/movies?query=${searchQuery}` }}><img
                   src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-                  alt={movie.original_title}
-                />
-                <Link to={`movies/${movie.id}`}>{movie.original_title}</Link>
-              </div>
-            </li>
+                  alt={movie.title}
+                /><p>{movie.title}</p></Link>
+            </MoviesListItem>
           ))
-        ) : (
-          <p>No movies found</p>
-        )}
-      </ul>
+        ) : null}
+      </MoviesList>
       </>
   );
 };
