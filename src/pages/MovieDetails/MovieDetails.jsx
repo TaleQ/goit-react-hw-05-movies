@@ -1,16 +1,34 @@
 import { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate , NavLink, Outlet } from 'react-router-dom';
+import {
+  useParams,
+  useLocation,
+  useNavigate,
+  NavLink,
+  Outlet,
+} from 'react-router-dom';
 import { useCustomContext } from 'context/Context';
 import { fetchMovieDetails } from 'api/Api';
 import { Loader } from 'components/Loader/Loader';
-import { MovieThumb, GoBackButton, GenresItem, GenresList, StyledSpan, MovieCard, AddInfoLink } from './MovieDetails.styled';
+import {
+  MovieThumb,
+  GoBackButton,
+  GenresItem,
+  GenresList,
+  StyledSpan,
+  MovieCard,
+  AddInfoLink,
+} from './MovieDetails.styled';
+import { DefaultImg } from 'components/DefaultImg/DefaultImg';
+import { Report } from 'notiflix';
 
 export const MovieDetails = () => {
   const { movieId } = useParams();
   const { isLoading, setIsLoading } = useCustomContext();
+
   const [movieData, setMovieData] = useState({});
   const [genres, setGenres] = useState([]);
-  const [releaseDate, setReleaseDate] = useState('Release year is unknown');
+  const [releaseDate, setReleaseDate] = useState('');
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -19,12 +37,11 @@ export const MovieDetails = () => {
       setIsLoading(true);
       try {
         const data = await fetchMovieDetails(movieId);
-        console.log(data);
         setMovieData(data);
         setGenres(data.genres);
         setReleaseDate(data.release_date.slice(0, 4));
       } catch (error) {
-        console.log(`Oops, something went wrong. ${error}. Try again later.`);
+        Report.info('An error occurred, try again later', `${error}`, 'Okay');
       } finally {
         setIsLoading(false);
       }
@@ -40,39 +57,56 @@ export const MovieDetails = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <GoBackButton type="button" onClick={handleClick}>Go back</GoBackButton>
-        <MovieCard>
-        <img
-          src={`https://image.tmdb.org/t/p/w200${movieData.poster_path}`}
-          alt={movieData.title}
-        ></img>
-      <div>
-          <h1>{movieData.title}<StyledSpan>{`(${releaseDate})`}</StyledSpan></h1>
-        <p>
-          <span>User score:</span>
-          <StyledSpan>{movieData.vote_average}</StyledSpan>
-        </p>
-        <h2>Overview</h2>
+      <GoBackButton type="button" onClick={handleClick}>
+        Go back
+      </GoBackButton>
+      <MovieCard>
+        {movieData.poster_path !== null ? (
+          <img
+            src={`https://image.tmdb.org/t/p/w200${movieData.poster_path}`}
+            alt={movieData.title}
+          />
+        ) : (
+          <DefaultImg />
+        )}
+        <div>
+          <h1>
+            {movieData.title}
+            {releaseDate !== '' && (
+              <StyledSpan>{`(${releaseDate})`}</StyledSpan>
+            )}
+            {/* <StyledSpan>{`(${releaseDate})`}</StyledSpan> */}
+          </h1>
+          <p>
+            <span>User score:</span>
+            <StyledSpan>{movieData.vote_average}</StyledSpan>
+          </p>
+          <h2>Overview</h2>
           <p>{movieData.overview}</p>
-          {genres.length > 0 && (<><h2>Genres</h2><GenresList>
-            {genres.map(genre => (
-              <GenresItem key={genre.id}>{genre.name}</GenresItem>
-            ))}
-          </GenresList></>)}
-      </div>
+          {genres.length > 0 && (
+            <>
+              <h2>Genres</h2>
+              <GenresList>
+                {genres.map(genre => (
+                  <GenresItem key={genre.id}>{genre.name}</GenresItem>
+                ))}
+              </GenresList>
+            </>
+          )}
+        </div>
       </MovieCard>
       <MovieThumb>
         <h2>Additional information</h2>
         <ul>
-          <AddInfoLink><NavLink to="cast">Cast</NavLink>
+          <AddInfoLink>
+            <NavLink to="cast">Cast</NavLink>
           </AddInfoLink>
-          <AddInfoLink><NavLink to="reviews">Reviews</NavLink>
+          <AddInfoLink>
+            <NavLink to="reviews">Reviews</NavLink>
           </AddInfoLink>
         </ul>
       </MovieThumb>
-      <MovieThumb>
-        <Outlet/>
-      </MovieThumb>
+      <Outlet />
     </>
   );
 };

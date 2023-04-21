@@ -1,9 +1,14 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import {fetchTrendingMovies} from 'api/Api'
-import { Loader } from "components/Loader/Loader";
-import { useCustomContext } from "context/Context";
-import { MoviesList, MoviesListItem } from "components/MoviesList/MoviesList.styled";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { fetchTrendingMovies } from 'api/Api';
+import { Loader } from 'components/Loader/Loader';
+import { useCustomContext } from 'context/Context';
+import {
+  MoviesList,
+  MoviesListItem,
+} from 'components/MoviesList/MoviesList.styled';
+import { DefaultImg } from 'components/DefaultImg/DefaultImg';
+import { Report } from 'notiflix';
 
 export const Home = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -14,31 +19,46 @@ export const Home = () => {
       setIsLoading(true);
       try {
         const data = await fetchTrendingMovies();
-        if (data.results.length === 0) {
-          console.log('No movies found');
-        } else {
+        if (data.results.length > 0) {
           setTrendingMovies(data.results);
         }
       } catch (error) {
-        console.log(`Oops, something went wrong. ${error}. Try again later.`);
+        Report.info('An error occurred, try again later', `${error}`, 'Okay');
       } finally {
         setIsLoading(false);
       }
-    }
+    };
     getMovies();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
-      <h1>Trending Movies</h1>
-      {isLoading && <Loader/>}
+      <h1>Trending today movies</h1>
+      {isLoading && <Loader />}
       <MoviesList>
-        {trendingMovies.length > 0 ?
-          trendingMovies.map(movie => (<MoviesListItem key={movie.id}><Link to={`movies/${movie.id}`} state={{ from: "/" }}><img src={`https://image.tmdb.org/t/p/w400${movie.poster_path}`} alt={movie.title} /><p>{movie.title}</p></Link></MoviesListItem>)) : <p text-align="center">No trending movies found</p> }
+        {trendingMovies.length > 0 ? (
+          trendingMovies.map(movie => (
+            <MoviesListItem key={movie.id}>
+              <Link to={`movies/${movie.id}`} state={{ from: '/' }}>
+                {movie.poster_path !== null ? (
+                  <img
+                    src={`https://image.tmdb.org/t/p/w400${movie.poster_path}`}
+                    alt={movie.title}
+                  />
+                ) : (
+                  <DefaultImg />
+                )}
+                <p>{movie.title}</p>
+              </Link>
+            </MoviesListItem>
+          ))
+        ) : (
+          <p>No trending movies found</p>
+        )}
       </MoviesList>
     </>
-  )
+  );
 };
 
 export default Home;

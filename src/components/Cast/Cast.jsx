@@ -1,23 +1,26 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useCustomContext } from "context/Context";
-import { fetchMovieCast } from "api/Api";
-import { Loader } from "components/Loader/Loader";
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useCustomContext } from 'context/Context';
+import { fetchMovieCast } from 'api/Api';
+import { Loader } from 'components/Loader/Loader';
+import { Report } from 'notiflix';
+import { CastList, CastItem, DefaultCastImg } from './Cast.styled';
+import { StyledSpan, MovieThumb } from 'pages/MovieDetails/MovieDetails.styled';
+import profileImg from '../../img/cast_img.png';
 
 export const Cast = () => {
   const { movieId } = useParams();
   const { isLoading, setIsLoading } = useCustomContext();
-  const [movieCast, setMovieCast] = useState([])
+  const [movieCast, setMovieCast] = useState([]);
 
   useEffect(() => {
     const getMovieCast = async () => {
       setIsLoading(true);
       try {
         const data = await fetchMovieCast(movieId);
-        console.log(data);
         setMovieCast(data.cast);
       } catch (error) {
-        console.log(`Oops, something went wrong. ${error}. Try again later.`);
+        Report.failure('Try again later', `${error}`, 'Okay');
       } finally {
         setIsLoading(false);
       }
@@ -29,11 +32,33 @@ export const Cast = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <ul>
-        {movieCast.map(cast => (<li key={cast.id}><img src={`https://image.tmdb.org/t/p/w200${cast.profile_path}`} alt='' /><p>{cast.name}</p><p><span>Character:</span><span>{cast.character}</span></p></li>) )}
-      </ul>
+      <MovieThumb>
+        <CastList>
+          {movieCast.map(cast => (
+            <CastItem key={cast.id}>
+              <div>
+                {cast.profile_path === null ? (
+                  <DefaultCastImg src={profileImg} alt="" />
+                ) : (
+                  <img
+                    src={`https://image.tmdb.org/t/p/w200${cast.profile_path}`}
+                    alt=""
+                  />
+                )}
+              </div>
+              <div>
+                <p>{cast.name}</p>
+                <p>
+                  <span>Character:</span>
+                  <StyledSpan>{cast.character}</StyledSpan>
+                </p>
+              </div>
+            </CastItem>
+          ))}
+        </CastList>
+      </MovieThumb>
     </>
-  )
+  );
 };
 
 export default Cast;
