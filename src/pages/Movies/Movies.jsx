@@ -87,10 +87,7 @@ export const Movies = () => {
         {moviesByQuery.length > 0
           ? moviesByQuery.map(movie => (
               <MoviesListItem key={movie.id}>
-                <Link
-                  to={`${movie.id}`}
-                  state={{ from: `/movies?query=${searchQuery}` }}
-                >
+                <Link to={`${movie.id}`} state={{ from: location }}>
                   {movie.poster_path !== null ? (
                     <img
                       src={`https://image.tmdb.org/t/p/w400/${movie.poster_path}`}
