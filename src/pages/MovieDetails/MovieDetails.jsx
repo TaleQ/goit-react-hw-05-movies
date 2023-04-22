@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom';
 import { useCustomContext } from 'context/Context';
 import { fetchMovieDetails } from 'api/Api';
-import { Loader } from 'components/Loader/Loader';
 import {
   MovieThumb,
   GoBackButton,
@@ -23,7 +22,7 @@ import { Report } from 'notiflix';
 
 export const MovieDetails = () => {
   const { movieId } = useParams();
-  const { isLoading, setIsLoading } = useCustomContext();
+  const { setIsLoading } = useCustomContext();
 
   const [movieData, setMovieData] = useState({});
   const [genres, setGenres] = useState([]);
@@ -56,7 +55,6 @@ export const MovieDetails = () => {
 
   return (
     <>
-      {isLoading && <Loader />}
       <GoBackButton type="button" onClick={handleClick}>
         Go back
       </GoBackButton>
@@ -75,7 +73,6 @@ export const MovieDetails = () => {
             {releaseDate !== '' && (
               <StyledSpan>{`(${releaseDate})`}</StyledSpan>
             )}
-            {/* <StyledSpan>{`(${releaseDate})`}</StyledSpan> */}
           </h1>
           <p>
             <span>User score:</span>

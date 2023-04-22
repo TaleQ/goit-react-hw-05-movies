@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCustomContext } from 'context/Context';
 import { fetchMovieCast } from 'api/Api';
-import { Loader } from 'components/Loader/Loader';
 import { Report } from 'notiflix';
 import { CastList, CastItem, DefaultCastImg } from './Cast.styled';
 import { StyledSpan, MovieThumb } from 'pages/MovieDetails/MovieDetails.styled';
@@ -10,7 +9,7 @@ import profileImg from '../../img/cast_img.png';
 
 export const Cast = () => {
   const { movieId } = useParams();
-  const { isLoading, setIsLoading } = useCustomContext();
+  const { setIsLoading } = useCustomContext();
   const [movieCast, setMovieCast] = useState([]);
 
   useEffect(() => {
@@ -31,7 +30,6 @@ export const Cast = () => {
 
   return (
     <>
-      {isLoading && <Loader />}
       <MovieThumb>
         <CastList>
           {movieCast.map(cast => (

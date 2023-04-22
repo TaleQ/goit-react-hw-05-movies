@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchTrendingMovies } from 'api/Api';
-import { Loader } from 'components/Loader/Loader';
 import { useCustomContext } from 'context/Context';
 import {
   MoviesList,
@@ -12,7 +11,7 @@ import { Report } from 'notiflix';
 
 export const Home = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);
-  const { isLoading, setIsLoading } = useCustomContext();
+  const { setIsLoading } = useCustomContext();
 
   useEffect(() => {
     const getMovies = async () => {
@@ -35,7 +34,6 @@ export const Home = () => {
   return (
     <>
       <h1>Trending today movies</h1>
-      {isLoading && <Loader />}
       <MoviesList>
         {trendingMovies.length > 0 ? (
           trendingMovies.map(movie => (

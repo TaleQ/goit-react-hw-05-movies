@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCustomContext } from 'context/Context';
 import { fetchMovieReviews } from 'api/Api';
-import { Loader } from 'components/Loader/Loader';
 import { MovieThumb, StyledSpan } from 'pages/MovieDetails/MovieDetails.styled';
 
 export const Reviews = () => {
   const { movieId } = useParams();
-  const { isLoading, setIsLoading } = useCustomContext();
+  const { setIsLoading } = useCustomContext();
   const [movieReviews, setMovieReviews] = useState([]);
 
   useEffect(() => {
@@ -28,7 +27,6 @@ export const Reviews = () => {
 
   return (
     <>
-      {isLoading && <Loader />}
       <MovieThumb>
         {movieReviews.length > 0 ? (
           <ul>

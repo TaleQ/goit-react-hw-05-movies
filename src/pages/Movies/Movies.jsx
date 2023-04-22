@@ -7,7 +7,6 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { fetchMoviesByQuery } from 'api/Api';
-import { Loader } from 'components/Loader/Loader';
 import {
   MoviesList,
   MoviesListItem,
@@ -21,7 +20,7 @@ export const Movies = () => {
   const [inputValue, setInputValue] = useState('');
   const [moviesByQuery, setMoviesByQuery] = useState([]);
 
-  const { isLoading, setIsLoading } = useCustomContext();
+  const { setIsLoading } = useCustomContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get('query');
 
@@ -84,7 +83,6 @@ export const Movies = () => {
           <TfiSearch fill="#ffffff" />
         </SearchButon>
       </SearchForm>
-      {isLoading && <Loader />}
       <MoviesList>
         {moviesByQuery.length > 0
           ? moviesByQuery.map(movie => (
