@@ -93,10 +93,14 @@ export const MovieDetails = () => {
         <h2>Additional information</h2>
         <ul>
           <AddInfoLink>
-            <NavLink to="cast">Cast</NavLink>
+            <NavLink to="cast" state={{ from: backLinkHref }}>
+              Cast
+            </NavLink>
           </AddInfoLink>
           <AddInfoLink>
-            <NavLink to="reviews">Reviews</NavLink>
+            <NavLink to="reviews" state={{ from: backLinkHref }}>
+              Reviews
+            </NavLink>
           </AddInfoLink>
         </ul>
       </MovieThumb>
