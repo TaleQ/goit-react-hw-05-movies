@@ -30,6 +30,7 @@ export const MovieDetails = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
+  const backLinkHref = location.state?.from ?? '/';
 
   useEffect(() => {
     const getMovieDetails = async () => {
@@ -49,13 +50,9 @@ export const MovieDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleClick = () => {
-    navigate(location.state.from);
-  };
-
   return (
     <>
-      <GoBackButton type="button" onClick={handleClick}>
+      <GoBackButton type="button" onClick={() => navigate(backLinkHref)}>
         Go back
       </GoBackButton>
       <MovieCard>
