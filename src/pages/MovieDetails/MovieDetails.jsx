@@ -23,10 +23,9 @@ import { Report } from 'notiflix';
 export const MovieDetails = () => {
   const { movieId } = useParams();
   const { setIsLoading } = useCustomContext();
-
-  const [movieData, setMovieData] = useState({});
-  const [genres, setGenres] = useState([]);
-  const [releaseDate, setReleaseDate] = useState('');
+  const [movieData, setMovieData] = useState({
+    genres: [],
+  });
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -38,8 +37,6 @@ export const MovieDetails = () => {
       try {
         const data = await fetchMovieDetails(movieId);
         setMovieData(data);
-        setGenres(data.genres);
-        setReleaseDate(data.release_date.slice(0, 4));
       } catch (error) {
         Report.info('An error occurred, try again later', `${error}`, 'Okay');
       } finally {
@@ -67,8 +64,11 @@ export const MovieDetails = () => {
         <div>
           <h1>
             {movieData.title}
-            {releaseDate !== '' && (
-              <StyledSpan>{`(${releaseDate})`}</StyledSpan>
+            {movieData.release_date && (
+              <StyledSpan>{`(${movieData.release_date.slice(
+                0,
+                4
+              )})`}</StyledSpan>
             )}
           </h1>
           <p>
@@ -77,11 +77,11 @@ export const MovieDetails = () => {
           </p>
           <h2>Overview</h2>
           <p>{movieData.overview}</p>
-          {genres.length > 0 && (
+          {movieData.genres.length > 0 && (
             <>
               <h2>Genres</h2>
               <GenresList>
-                {genres.map(genre => (
+                {movieData.genres.map(genre => (
                   <GenresItem key={genre.id}>{genre.name}</GenresItem>
                 ))}
               </GenresList>
